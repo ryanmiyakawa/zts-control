@@ -1,0 +1,7 @@
+cxro.common.device
+cxro.common.device.camera
+cxro.common.device.scanner
+cxro.common.device.sensor
+cxro.common.device.shaker
+cxro.zts2
+cxro.zts2.device

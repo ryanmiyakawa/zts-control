@@ -1,0 +1,1 @@
+[{"key":"Coupled motion test","value":[["Hexapod X",0,0.1,1,0,false],["Hexapod Y",0,0.1,1,0,false],"Pause 2s",false]},{"key":"Coupled period test","value":[["Ret Fine X",-1.25,0.02,1.25,0,true],["Ret Crs Z",-1.565,0.025,1.565,0,true],"Image capture",false]}]

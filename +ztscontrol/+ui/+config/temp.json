@@ -1,0 +1,30 @@
+{
+	"delay": 0.1,
+	"units": [
+		{
+			"name": "C",
+			"slope": 1,
+			"offset": 0,
+			"precision": 1
+		}
+	],
+    "step": 1,
+	"stores": [
+        {
+            "name": "Warm (25 C)",
+            "raw": 25
+        },
+        {
+            "name": "Cool (-10 C)",
+            "raw": -10
+        },
+		{
+            "name": "Cold (-40 C)",
+            "raw": -40
+        }
+    ],
+    "min": -40,
+    "max": 30
+}	
+	
+	

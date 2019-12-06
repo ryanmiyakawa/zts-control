@@ -1,0 +1,1 @@
+[{"key":"Hexapod scan test","value":[["Hexapod X",0,0.1,1,10,true],["Hexapod Y",0,0.5,0.5,1,true],"Pause 2s",false]},{"key":"LSI EXP P/S 10-step","value":[["Reticle X",0,0.0234,0.234,10,true],["Reticle Y",0,0.117,0.117,2,true],"Image capture",false]}]

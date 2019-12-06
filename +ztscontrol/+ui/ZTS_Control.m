@@ -1875,7 +1875,7 @@ classdef ZTS_Control < mic.Base
             this.uicbSubtractBackground.build(this.hpCameraControls, 730, 90, 120, 25);
             
             
-            this.uipbExposureProgress.build(this.hpCameraControls, 10, 115);
+            this.uipbExposureProgress.build(this.hpCameraControls, 10, 10, 10, 115);
                   
             % Button colors:
             this.uiButtonAcquire.setText('Acquire')

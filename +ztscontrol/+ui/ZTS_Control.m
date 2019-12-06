@@ -146,7 +146,7 @@ classdef ZTS_Control < mic.Base
     
     properties (Constant)
         dWidth  = 1750;
-        dHeight =  1100;
+        dHeight =  1000;
         
         % Camera modes
         U8CAMERA_MODE_ACQUIRE = 0
@@ -1760,7 +1760,7 @@ classdef ZTS_Control < mic.Base
            
            
            % Main Axes:
-           this.uitgAxes.build(this.hFigure, 880, 215, 860, 885);
+           this.uitgAxes.build(this.hFigure, 880, 50, 860, 885);
            this.hsaAxes.build(this.uitgAxes.getTabByName('Camera'), this.hFigure, 10, 10, 810, 720);
             
            
@@ -1773,7 +1773,7 @@ classdef ZTS_Control < mic.Base
                 'FontWeight', 'Bold',...
                 'Clipping', 'on',...
                 'BorderWidth',0, ... 
-                'Position', [10 300 490 770] ...
+                'Position', [10 620 490 300] ...
             );
         
             % Scan control panel:
@@ -1784,13 +1784,13 @@ classdef ZTS_Control < mic.Base
                 'FontWeight', 'Bold',...
                 'Clipping', 'on',...
                 'BorderWidth',0, ... 
-                'Position', [510 300 360 770] ...
+                'Position', [510 620 360 300] ...
                 );
         
             drawnow
         
             % Scan controls:
-            this.uitgScan.build(this.hFigure, 10, 815, 860, 280);
+            this.uitgScan.build(this.hFigure, 10, 400, 860, 300);
 
              % Scans:
             this.ss1D.build(this.uitgScan.getTabByIndex(1), 10, 10, 850, 230); 
@@ -1835,16 +1835,6 @@ classdef ZTS_Control < mic.Base
             end
             dAxisPos = dAxisPos + 20;
             
-            % Don't build goni stuff for now
-%             this.uiCommSmarActMcsGoni.build(this.hpStageControls,  dLeft, dAxisPos - 7);
-%             this.uibHomeGoni.build(this.hpStageControls, dLeft + 340, dAxisPos - 5, 95, 20);
-%             dAxisPos = dAxisPos + 20;
-%             for k = 1:length(this.cGoniLabels)
-%                 this.uiDeviceArrayGoni{k}.build(this.hpStageControls, ...
-%                     dLeft, dAxisPos);
-%                 dAxisPos = dAxisPos + this.dMultiAxisSeparation;
-%             end
-
            
             % Camera control panel:
             this.hpCameraControls = uipanel(...
@@ -1854,7 +1844,7 @@ classdef ZTS_Control < mic.Base
                 'FontWeight', 'Bold',...
                 'Clipping', 'on',...
                 'BorderWidth',0, ... 
-                'Position', [880 900 860 170] ...
+                'Position', [10 20 860 200] ...
             );
             
             % Camera UI elements

@@ -2,7 +2,6 @@ classdef ZTS_Control < mic.Base
     
     
     properties
-        hardware
         
         cAppPath        = fileparts(mfilename('fullpath'))
         cDataPath
@@ -19,9 +18,8 @@ classdef ZTS_Control < mic.Base
         % Comm handles:
          % {mic.ui.device.GetSetLogical 1x1}
         
-        uiCommSmarActMcsGoni
-        uiCommSmarActSmarPod
-        uiCommPIMTECamera
+        uiCommSmarActSpaceFab
+        uiCommPixisCamera
         
         uicommWaferDoseMonitor
         
@@ -226,31 +224,40 @@ classdef ZTS_Control < mic.Base
             };
 
            
-            this.uiCommSmarActSmarPod = mic.ui.device.GetSetLogical(...
+            this.uiCommSpaceFab = mic.ui.device.GetSetLogical(...
                 'clock', this.clock, ...
                 'ceVararginCommandToggle', ceVararginCommandToggle, ...
                 'dWidthName', 130, ...
                 'lShowLabels', false, ...
                 'lShowDevice', false, ...
                 'lShowInitButton', false, ...
-                'cName', 'smarpod', ...
-                'cLabel', 'SmarPod' ...
+                'cName', 'spaceFab', ...
+                'cLabel', 'SpaceFab', ...
+                'fhGet', @() isempty(this.apiHexapod), ...
+                'fhSetTrue', @this.initAndConnectSpaceFab, ...
+                'fhSetFalse', @this.destroyAndDisconnectSpaceFab ...
                 );
         
-            this.uiCommPIMTECamera = mic.ui.device.GetSetLogical(...
+            this.uiCommPixisCamera = mic.ui.device.GetSetLogical(...
                 'clock', this.clock, ...
                 'ceVararginCommandToggle', ceVararginCommandToggle, ...
                 'dWidthName', 130, ...
                 'lShowLabels', false, ...
                 'lShowDevice', false, ...
                 'lShowInitButton', false, ...
-                'cName', 'pimteCamera', ...
-                'cLabel', 'PI-MTE Camera' ...
+                'cName', 'pixisCamera', ...
+                'cLabel', 'PIXIS Camera', ...
+                'fhGet', @() isempty(this.apiCamera), ...
+                'fhSetTrue', @this.initAndConnectPixis, ...
+                'fhSetFalse', @this.destroyAndDisconnectPixis ...
                 );
             
             
         end
         
+
+
+   
         
         
         function letMeIn(this)
@@ -532,7 +539,12 @@ classdef ZTS_Control < mic.Base
             this.clock = mic.Clock('app');
         end
         
-        function setCameraDeviceAndEnable(this, device)
+        function initAndConnectPixis(this, device)
+            
+            % Direct Java api:
+            device = this.hardware.getCamera();
+            
+            % Translated API
             this.apiCamera = ztscontrol.javaAPI.APIPVCam( ...
                 'hDevice', device, ...
                 'fhWhileAcquiring', @(elapsedTime)this.whileAcquiring(elapsedTime), ...
@@ -564,7 +576,7 @@ classdef ZTS_Control < mic.Base
         end
         
         % Resets api, bridges, and disconnects hardware device.
-        function disconnectCamera(this)
+        function destroyAndDisconnectPixis(this)
             
             this.uiDeviceCameraTemperature.turnOff();
             this.uiDeviceCameraTemperature.setDevice([]);
@@ -583,7 +595,10 @@ classdef ZTS_Control < mic.Base
 
         % Builds hexapod java api, connecting getSetNumber UI elements
         % to the appropriate API hooks.  Device is already connected
-        function setHexapodDeviceAndEnable(this, device)
+        function initAndConnectSpaceFab(this)
+            
+            % Direct Java api:
+            device = this.hardware.getHexapod();
             
             % Instantiate javaStageAPIs for communicating with devices
             this.apiHexapod 	= ztscontrol.javaAPI.CXROJavaStageAPI(...
@@ -621,7 +636,7 @@ classdef ZTS_Control < mic.Base
         end
         
         % Resets api, bridges, and disconnects hardware device.
-        function disconnectHexapod(this)
+        function destroyAndDisconnectSpaceFab(this)
             for k = 1:6
                 this.oHexapodBridges{k} = [];
                 this.uiDeviceArrayHexapod{k}.turnOff();
@@ -1114,20 +1129,7 @@ classdef ZTS_Control < mic.Base
                    end
             end
             
-            % Prepare conjugate locking
-            if u8OutputIdx == 11
-                this.lIsConjugateLockEnabled = true;
-                
-                
-                dUnit = this.uiDeviceArrayReticle{3}.getUnit().name;
-                dRetZVal = this.uiDeviceArrayReticle{3}.getValCal(dUnit);
-                dHSVal = this.hardware.getMfDriftMonitorMiddleware().getSimpleZ(200);
-                fprintf('(LSI-Control) Initializing conjugate locking\n');
-                fprintf('\tRet Z initial val: %0.9f\n', dRetZVal);
-                fprintf('\tHS Z initial val: %0.3f\n', dHSVal);
-                this.dInitialRetZValue = dRetZVal;
-                this.dInitialHSSZValue = dHSVal;
-            end
+   
             
             % Set series number:
             
@@ -1825,7 +1827,7 @@ classdef ZTS_Control < mic.Base
             dLeft = 20;
            
              % Build comms and axes
-            this.uiCommSmarActSmarPod.build(this.hpStageControls, dLeft, dAxisPos - 7);
+            this.uiCommSmarActSpaceFab.build(this.hpStageControls, dLeft, dAxisPos - 7);
             this.uibHomeHexapod.build(this.hpStageControls, dLeft + 340, dAxisPos - 5, 95, 20);
             dAxisPos = dAxisPos + 20;
             for k = 1:length(this.cHexapodAxisLabels)
@@ -1851,7 +1853,7 @@ classdef ZTS_Control < mic.Base
             this.uiDeviceCameraTemperature.build(this.hpCameraControls, 10, 40);            
             this.uiDeviceCameraExposureTime.build(this.hpCameraControls, 10, 70);
             
-            this.uiCommPIMTECamera.build    (this.hpCameraControls, 10,  15);
+            this.uiCommPixisCamera.build    (this.hpCameraControls, 10,  15);
             
             this.uipBinning.build           (this.hpCameraControls, 545, 40, 70, 25);
             this.uiButtonFocus.build        (this.hpCameraControls, 630, 50, 60,  25);

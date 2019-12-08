@@ -6,8 +6,10 @@ end
 
 mpm addpath
 
+clock = mic.Clock('ZTS-control');
 
-app = ztscontrol.ui.ZTS_Control();
+
+app = ztscontrol.ui.ZTS_Control(hardware);
 
 
 

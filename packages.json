@@ -1,6 +1,5 @@
 {
 	"dependencies":[
-		"LSI_control",
 		"matlab_instrument_control"
 	]
 }

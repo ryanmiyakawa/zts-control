@@ -8,10 +8,9 @@ mpm addpath
 
 clock = mic.Clock('ZTS-control');
 
+hardware = ztscontrol.ztsHardware;
 
-app = ztscontrol.ui.ZTS_Control(hardware);
+app = ztscontrol.ui.ZTS_Control('hardware', hardware);
 
-
-
-%%
 app.build()
+

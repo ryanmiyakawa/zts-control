@@ -40,7 +40,7 @@ classdef ztsHardware < mic.Base
         cDirMet5InstrumentsDir = ...
             fullfile(fileparts(mfilename('fullpath')), '..', 'jar');
         
-        cJarName = 'zts-instruments-1.0.1-all.jar';
+        cJarName = 'zts-instruments-1.1.0-all.jar';
     end
     
 
@@ -88,7 +88,7 @@ classdef ztsHardware < mic.Base
                 this.getInstruments();
             end
             if isempty(this.commSpaceFabHexapod)
-                this.commSpaceFabHexapod = this.jInstruments.getSpaceFab('COM3');
+                this.commSpaceFabHexapod = this.jInstruments.getSpaceFab();
             end
             comm = this.commSpaceFabHexapod;
         end

@@ -56,52 +56,36 @@ classdef CXROJavaStageAPI < handle
             end
         end
         
-        function lOut = connect(this)
-            if isempty(this.jStage)
-                this.jStage = this.fhStageGetter();
-                this.isStageDefined = true;
-            end
-            lOut = this.connectStage();
+        function lOut = connect(this, comm)
+
+            lOut = this.jStage.connect(comm);
         end
         
-        function disconnect(this)
-            this.disconnectStage();
-        end
-        
-        function lOut = isConnected(this)
-            lOut = this.isStageConnected();
-        end
-        
+
         function stop(this)
-            this.abortAxesMove();
+            this.jStage.abortMove();
         end
         
         function setAxesPosition(this, dDest)
-            this.moveAxesAbsolute(dDest);
+            this.jStage.moveStageAbsolute(dDest, false);
         end
-        
-        function setAxisPosition(this, dAxis, dDest)
-            this.moveAxisAbsolute(dAxis, dDest);
-        end
+
         
         function dOut = getAxesPosition(this)
-            dOut = this.getAxesPositionAPI();
+            dOut = this.jStage.getStagePosition();
         end
         
-        function dOut = getAxisPosition(this, dAxis)
-            dOut = this.getAxisPositionAPI(dAxis);
-        end
         
         function home(this)
-            this.initializeAxes();
+            this.jStage.homeStage();
         end
         
         function lOut = isInitialized(this)
-            lOut = this.getAxesIsInitialized();
+            lOut = this.jStage.isInitialized();
         end
         
         function lOut = isReady(this)
-            lOut = this.getAxesIsReady();
+            lOut = this.jStage.isReady();
         end
         
     end
@@ -184,7 +168,7 @@ classdef CXROJavaStageAPI < handle
         end
         
         function lOut = getAxesIsInitialized(this)
-            lOut = this.jStage.getAxesIsInitialized();
+            lOut = this.jStage.isInitialized();
         end
         
         function lOut = getAxesIsLinear(this)

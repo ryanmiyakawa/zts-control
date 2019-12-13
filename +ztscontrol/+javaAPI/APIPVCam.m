@@ -7,7 +7,7 @@ classdef APIPVCam < mic.Base
         hDevice
         clock
         
-        dPixels = [1340, 1300]
+        dPixels = [2048, 2048]
         
         dAcquisitionDelay = 1; % delay associated with returning an image
         dExposureTime = -1 % this is not stored on device so we have to handle it here
@@ -21,8 +21,8 @@ classdef APIPVCam < mic.Base
         
         
         
-        nPixelsX = 1340
-        nPixelsY = 1300
+        nPixelsX = 2048
+        nPixelsY = 2048
         
         dCurrentImage = []
         
@@ -198,7 +198,7 @@ classdef APIPVCam < mic.Base
             % Once image is captured, stop camera:
             this.hDevice.stopCapture();
             
-            this.dCurrentImage = reshape(dImg, 1340/this.dBinning, 1300/this.dBinning);
+            this.dCurrentImage = reshape(dImg, 2048/this.dBinning, 2048/this.dBinning);
             [sr, sc] = size(this.dCurrentImage);
             this.dCurrentImage = crop2(this.dCurrentImage, ...
                 min([sr, sc]), min([sr, sc]));
@@ -260,7 +260,7 @@ classdef APIPVCam < mic.Base
             % Once image is captured, stop camera:
             this.hDevice.stopCapture();
             
-            this.dCurrentImage = reshape(dImg, 1340/this.dBinning, 1300/this.dBinning);
+            this.dCurrentImage = reshape(dImg, 2048/this.dBinning, 2048/this.dBinning);
             [sr, sc] = size(this.dCurrentImage);
             this.dCurrentImage = crop2(this.dCurrentImage, ...
                 min([sr, sc]), min([sr, sc]));

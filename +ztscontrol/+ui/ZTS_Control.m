@@ -2,6 +2,7 @@ classdef ZTS_Control < mic.Base
     
     
     properties
+        hardware
         
         cAppPath        = fileparts(mfilename('fullpath'))
         cDataPath
@@ -18,7 +19,7 @@ classdef ZTS_Control < mic.Base
         % Comm handles:
          % {mic.ui.device.GetSetLogical 1x1}
         
-        uiCommSmarActSpaceFab
+        uiCommSpaceFab
         uiCommPixisCamera
         
         uicommWaferDoseMonitor
@@ -233,9 +234,10 @@ classdef ZTS_Control < mic.Base
                 'lShowInitButton', false, ...
                 'cName', 'spaceFab', ...
                 'cLabel', 'SpaceFab', ...
-                'fhGet', @() isempty(this.apiHexapod), ...
-                'fhSetTrue', @this.initAndConnectSpaceFab, ...
-                'fhSetFalse', @this.destroyAndDisconnectSpaceFab ...
+                'lUseFunctionCallbacks', true, ...
+                'fhIsVirtual', @() false,...
+                'fhGet', @() ~isempty(this.apiHexapod), ...
+                'fhSet', @(lVal)this.handleSpacefabCommToggle(lVal) ...
                 );
         
             this.uiCommPixisCamera = mic.ui.device.GetSetLogical(...
@@ -247,11 +249,14 @@ classdef ZTS_Control < mic.Base
                 'lShowInitButton', false, ...
                 'cName', 'pixisCamera', ...
                 'cLabel', 'PIXIS Camera', ...
-                'fhGet', @() isempty(this.apiCamera), ...
-                'fhSetTrue', @this.initAndConnectPixis, ...
-                'fhSetFalse', @this.destroyAndDisconnectPixis ...
+                'lUseFunctionCallbacks', true, ...
+                'fhIsVirtual', @() false,...
+                'fhGet', @() ~isempty(this.apiCamera), ...
+                'fhSet', @(lVal)this.handlePixisCommToggle(lVal) ...
                 );
             
+%             this.uiCommSpaceFab.turnOn();
+%             this.uiCommPixisCamera.turnOn();
             
         end
         
@@ -592,6 +597,20 @@ classdef ZTS_Control < mic.Base
         end
         
         
+        function handleSpacefabCommToggle(this, lVal)
+            if lVal
+                this.initAndConnectSpaceFab();
+            else
+                 this.destroyAndDisconnectSpaceFab();
+            end
+        end
+        function handlePixisCommToggle(this, lVal)
+            if lVal
+                this.initAndConnectPixis();
+            else
+                this.destroyAndDisconnectPixis();
+            end
+        end
 
         % Builds hexapod java api, connecting getSetNumber UI elements
         % to the appropriate API hooks.  Device is already connected
@@ -600,9 +619,15 @@ classdef ZTS_Control < mic.Base
             % Direct Java api:
             device = this.hardware.getHexapod();
             
+            
+            
             % Instantiate javaStageAPIs for communicating with devices
             this.apiHexapod 	= ztscontrol.javaAPI.CXROJavaStageAPI(...
                                   'jStage', device);
+           
+            if ~this.apiHexapod.isReady()
+            this.apiHexapod.connect('COM3');
+            end
            
             % Check if we need to index stage:
             if (~this.apiHexapod.isInitialized())
@@ -624,7 +649,7 @@ classdef ZTS_Control < mic.Base
             end
             
             % Use coupled-axis bridge to create single axis control
-            dSubR = [0 -1 0 ; -1 0 0; 0 0 1];
+            dSubR = [-1 0 0 ; 0 0 1; 0 1 0];
             dHexapodR = [dSubR, zeros(3); zeros(3), dSubR];  
             for k = 1:6
                 this.oHexapodBridges{k} = ztscontrol.device.CoupledAxisBridge(this.apiHexapod, k, 6);
@@ -644,7 +669,7 @@ classdef ZTS_Control < mic.Base
             end
             
             % Disconnect the stage:
-            this.apiHexapod.disconnect();
+%             this.apiHexapod.disconnect();
             
             % Delete the Stage API
             this.apiHexapod = [];
@@ -1827,7 +1852,7 @@ classdef ZTS_Control < mic.Base
             dLeft = 20;
            
              % Build comms and axes
-            this.uiCommSmarActSpaceFab.build(this.hpStageControls, dLeft, dAxisPos - 7);
+            this.uiCommSpaceFab.build(this.hpStageControls, dLeft, dAxisPos - 7);
             this.uibHomeHexapod.build(this.hpStageControls, dLeft + 340, dAxisPos - 5, 95, 20);
             dAxisPos = dAxisPos + 20;
             for k = 1:length(this.cHexapodAxisLabels)
